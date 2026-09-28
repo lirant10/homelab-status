@@ -7,11 +7,11 @@ from ollama import Client
 import homelab
 
 MODEL = os.environ.get("OLLAMA_MODEL", "qwen3:8b")
-client = Client(host=os.environ.get("OLLAMA_URL", "http://localhost:11434"))
+client = Client(host=os.environ.get("OLLAMA_URL", "http://localhost:11434"), timeout=120)
 
 SYSTEM_PROMPT = (
     "You are a homelab assistant. Use the tools to get live data about "
-    "VMs and containers before you answer. Keep answers short."
+    "VMs and containers before you answer. Keep answers short. Plain text only, no Markdown."
 )
 
 
