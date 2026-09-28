@@ -11,7 +11,10 @@ client = Client(host=os.environ.get("OLLAMA_URL", "http://localhost:11434"), tim
 
 SYSTEM_PROMPT = (
     "You are a homelab assistant. Use the tools to get live data about "
-    "VMs and containers before you answer. Keep answers short. Plain text only, no Markdown."
+    "VMs and containers before you answer. When you report containers, also "
+    "check get_down_targets: containers on a host whose exporter is down are "
+    "missing from the data, so never say all containers are running without "
+    "mentioning down targets. Keep answers short. Plain text only, no Markdown."
 )
 
 
@@ -33,7 +36,20 @@ def get_containers() -> str:
     return json.dumps(homelab.get_containers())
 
 
-TOOLS = {"get_vms": get_vms, "get_containers": get_containers}
+def get_down_targets() -> str:
+    """Get monitoring targets that Prometheus cannot reach right now.
+
+    Returns:
+        JSON list of down targets, each with job and instance
+    """
+    return json.dumps(homelab.get_down_targets())
+
+
+TOOLS = {
+    "get_vms": get_vms,
+    "get_containers": get_containers,
+    "get_down_targets": get_down_targets,
+}
 
 
 def ask(question):

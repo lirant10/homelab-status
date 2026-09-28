@@ -33,3 +33,11 @@ def get_containers():
         containers.append({"name": m["name"], "host": m["instance"], "image": m["image"],
                            "state": state, "running": state == "running"})
     return containers
+
+
+def get_down_targets():
+    targets = []
+    for item in query("up == 0"):
+        m = item["metric"]
+        targets.append({"job": m.get("job", ""), "instance": m.get("instance", "")})
+    return targets
