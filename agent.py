@@ -52,11 +52,11 @@ TOOLS = {
 }
 
 
-def ask(question):
-    messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": question},
-    ]
+def ask(question, history=None):
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    # Earlier user/assistant messages, so follow-up questions have context
+    messages += history or []
+    messages.append({"role": "user", "content": question})
     # Safety limit: stop after 5 rounds so a confused model can't loop forever
     for _ in range(5):
         response = client.chat(
