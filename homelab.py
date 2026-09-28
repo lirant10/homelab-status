@@ -1,6 +1,7 @@
+import os
 import requests
 
-PROMETHEUS = "http://192.168.0.10:9090"
+PROMETHEUS = os.environ["PROMETHEUS_URL"]
 
 CONTAINER_STATES = {"0": "created", "1": "initialized", "2": "running", "3": "stopped",
                     "4": "paused", "5": "exited", "6": "removing", "7": "stopping"}

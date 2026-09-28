@@ -1,6 +1,7 @@
+import os
 import requests
 
-PROMETHEUS = "http://192.168.0.10:9090"
+PROMETHEUS = os.environ["PROMETHEUS_URL"]
 
 
 def query(promql):
