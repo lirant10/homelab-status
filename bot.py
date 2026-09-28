@@ -1,4 +1,5 @@
 import os
+import time
 import requests
 import homelab
 
@@ -31,15 +32,20 @@ def main():
     offset = None
     print("Bot is running. Ctrl+C to stop.")
     while True:
-        for update in get_updates(offset):
-            offset = update["update_id"] + 1
-            message = update.get("message", {})
-            if message.get("chat", {}).get("id") != MY_CHAT:
-                continue
-            if message.get("text", "").startswith("/status"):
-                send_message(MY_CHAT, status_text())
-            else:
-                send_message(MY_CHAT, "Send /status to see the lab.")
+        try:
+            for update in get_updates(offset):
+                offset = update["update_id"] + 1
+                message = update.get("message", {})
+                if message.get("chat", {}).get("id") != MY_CHAT:
+                    continue
+                if message.get("text", "").startswith("/status"):
+                    send_message(MY_CHAT, status_text())
+                else:
+                    send_message(MY_CHAT, "Send /status to see the lab.")
+        except requests.RequestException as e:
+            # Print only the error type: the full message includes the URL with the token
+            print(f"Network error ({type(e).__name__}), retrying in 10 seconds")
+            time.sleep(10)
 
 
 if __name__ == "__main__":
