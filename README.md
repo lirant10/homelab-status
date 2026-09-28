@@ -22,7 +22,7 @@ The main part is a Telegram bot that answers `/status`.
 ```bash
 uv sync
 cp .env.example .env && chmod 600 .env
-# edit .env: add your bot token and chat id
+# edit .env: add your bot token, chat id and Prometheus URL
 ```
 
 ## Run
