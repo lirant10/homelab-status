@@ -34,13 +34,23 @@ def status_text():
     return "\n".join(lines)
 
 
+# Recent user/assistant messages, so the agent can answer follow-up questions
+history = []
+MAX_HISTORY = 10
+
+
 def ask_agent(question):
     try:
-        return agent.ask(question)
+        answer = agent.ask(question, history)
     except Exception as e:
         # Never let an AI problem crash the bot; print only the error type
         print(f"Agent error ({type(e).__name__})")
         return "AI is not available right now (is the SSH tunnel open?). /status still works."
+    history.append({"role": "user", "content": question})
+    history.append({"role": "assistant", "content": answer})
+    # Keep only the last messages so the prompt stays small and fast
+    del history[:-MAX_HISTORY]
+    return answer
 
 
 def main():
@@ -56,6 +66,9 @@ def main():
                 text = message.get("text", "")
                 if text.startswith("/status"):
                     send_message(MY_CHAT, status_text())
+                elif text.startswith("/new"):
+                    history.clear()
+                    send_message(MY_CHAT, "Started a new conversation.")
                 elif text:
                     send_typing(MY_CHAT)
                     send_message(MY_CHAT, ask_agent(text))
