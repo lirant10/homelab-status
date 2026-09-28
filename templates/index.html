@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="30">
+  <title>Homelab status</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #111418; color: #e6e6e6; margin: 0; padding: 24px; }
+    h1 { margin: 0 0 4px; }
+    .sub { color: #8a93a0; margin-bottom: 24px; }
+    .cards { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 32px; }
+    .card { background: #1b2027; border-radius: 12px; padding: 16px 20px; min-width: 180px; }
+    .card .num { font-size: 40px; font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; background: #1b2027; border-radius: 12px; overflow: hidden; margin-bottom: 32px; }
+    th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #262c35; }
+    th { color: #8a93a0; font-weight: 500; }
+    .on { color: #4ade80; } .off { color: #f87171; }
+  </style>
+</head>
+<body>
+  <h1>🏠 Homelab status</h1>
+  <div class="sub">Live from Prometheus - refreshes every 30 seconds</div>
+
+  <div class="cards">
+    <div class="card"><div>VMs on</div><div class="num">{{ vms_on }} / {{ vms|length }}</div></div>
+    <div class="card"><div>Containers running</div><div class="num">{{ containers_running }} / {{ containers|length }}</div></div>
+  </div>
+
+  <h2>Virtual machines</h2>
+  <table>
+    <tr><th>VM</th><th>State</th></tr>
+    {% for vm in vms %}
+    <tr><td>{{ vm.name }}</td><td class="{{ 'on' if vm.on else 'off' }}">{{ '🟢 on' if vm.on else '🔴 off' }}</td></tr>
+    {% endfor %}
+  </table>
+
+  <h2>Containers</h2>
+  <table>
+    <tr><th>Container</th><th>Host</th><th>Image</th><th>State</th></tr>
+    {% for c in containers %}
+    <tr><td>{{ c.name }}</td><td>{{ c.host }}</td><td>{{ c.image }}</td>
+        <td class="{{ 'on' if c.running else 'off' }}">{{ c.state }}</td></tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
