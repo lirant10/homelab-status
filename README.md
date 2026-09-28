@@ -27,6 +27,8 @@ cp .env.example .env && chmod 600 .env
 
 ## Run
 
+<img width="400" alt="Bot /status reply" src="https://github.com/user-attachments/assets/7b34bd7f-3f57-4e10-a13b-8d0791c943b8" />
+
 ```bash
 uv run --env-file .env python bot.py
 ```
