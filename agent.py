@@ -11,7 +11,7 @@ client = Client(host=os.environ.get("OLLAMA_URL", "http://localhost:11434"), tim
 
 SYSTEM_PROMPT = (
     "You are a homelab assistant. Use the tools to get live data about "
-    "VMs and containers before you answer. When you report containers, also "
+    "ESXi hosts, datastores, VMs and containers before you answer. When you report containers, also "
     "check get_down_targets: containers on a host whose exporter is down are "
     "missing from the data, so never say all containers are running without "
     "mentioning down targets. Keep answers short. Plain text only, no Markdown."
@@ -19,12 +19,30 @@ SYSTEM_PROMPT = (
 
 
 def get_vms() -> str:
-    """Get all VMs on the ESXi host and whether each one is powered on.
+    """Get all VMs on all ESXi hosts and whether each one is powered on.
 
     Returns:
-        JSON list of VMs, each with name and on (true or false)
+        JSON list of VMs, each with name, host and on (true or false)
     """
     return json.dumps(homelab.get_vms())
+
+
+def get_hosts() -> str:
+    """Get all ESXi hosts with their CPU and memory usage.
+
+    Returns:
+        JSON list of hosts, each with name, cpu_percent and memory_percent
+    """
+    return json.dumps(homelab.get_hosts())
+
+
+def get_datastores() -> str:
+    """Get all VMware datastores and how full they are.
+
+    Returns:
+        JSON list of datastores, each with name and used_percent
+    """
+    return json.dumps(homelab.get_datastores())
 
 
 def get_containers() -> str:
@@ -46,6 +64,8 @@ def get_down_targets() -> str:
 
 
 TOOLS = {
+    "get_hosts": get_hosts,
+    "get_datastores": get_datastores,
     "get_vms": get_vms,
     "get_containers": get_containers,
     "get_down_targets": get_down_targets,

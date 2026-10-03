@@ -23,15 +23,32 @@
   <div class="sub">Live from Prometheus - refreshes every 30 seconds</div>
 
   <div class="cards">
+    <div class="card"><div>ESXi hosts</div><div class="num">{{ hosts|length }}</div></div>
     <div class="card"><div>VMs on</div><div class="num">{{ vms_on }} / {{ vms|length }}</div></div>
     <div class="card"><div>Containers running</div><div class="num">{{ containers_running }} / {{ containers|length }}</div></div>
   </div>
 
+  <h2>ESXi hosts</h2>
+  <table>
+    <tr><th>Host</th><th>CPU</th><th>Memory</th></tr>
+    {% for h in hosts %}
+    <tr><td>{{ h.name }}</td><td>{{ '?' if h.cpu_percent is none else h.cpu_percent ~ '%' }}</td><td>{{ '?' if h.memory_percent is none else h.memory_percent ~ '%' }}</td></tr>
+    {% endfor %}
+  </table>
+
+  <h2>Datastores</h2>
+  <table>
+    <tr><th>Datastore</th><th>Used</th></tr>
+    {% for ds in datastores %}
+    <tr><td>{{ ds.name }}</td><td class="{{ 'off' if ds.used_percent > 85 else '' }}">{{ ds.used_percent }}%</td></tr>
+    {% endfor %}
+  </table>
+
   <h2>Virtual machines</h2>
   <table>
-    <tr><th>VM</th><th>State</th></tr>
+    <tr><th>VM</th><th>Host</th><th>State</th></tr>
     {% for vm in vms %}
-    <tr><td>{{ vm.name }}</td><td class="{{ 'on' if vm.on else 'off' }}">{{ '🟢 on' if vm.on else '🔴 off' }}</td></tr>
+    <tr><td>{{ vm.name }}</td><td>{{ vm.host }}</td><td class="{{ 'on' if vm.on else 'off' }}">{{ '🟢 on' if vm.on else '🔴 off' }}</td></tr>
     {% endfor %}
   </table>
 
