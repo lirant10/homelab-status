@@ -76,6 +76,21 @@ sudo loginctl enable-linger $USER
 
 Logs: `journalctl --user -u homelab-bot -f`
 
+## Container image
+
+Every push to `master` builds `ghcr.io/lirant10/homelab-status` (`:latest` and `:sha-<commit>`),
+see `.github/workflows/image.yml`. PRs build it and check that the code imports.
+
+~~~bash
+docker run --rm --env-file .env ghcr.io/lirant10/homelab-status:latest          # the bot
+docker run --rm --env-file .env -p 8000:8000 ghcr.io/lirant10/homelab-status:latest \
+  python -m uvicorn app:app --host 0.0.0.0 --port 8000                           # the web page
+~~~
+
+It runs on my k3s cluster through Argo CD (manifests in the `homelab-k8s` repo).
+Run **only one bot at a time**: Telegram long polling allows a single consumer per token, so stop the
+systemd service before the bot starts in Kubernetes (`systemctl --user disable --now homelab-bot`).
+
 ## Roadmap
 
 See GitHub Issues.
