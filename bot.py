@@ -24,10 +24,20 @@ def send_typing(chat_id):
     requests.post(f"{API}/sendChatAction", json={"chat_id": chat_id, "action": "typing"}, timeout=10)
 
 
+def pct(value):
+    return "?" if value is None else f"{value}%"
+
+
 def status_text():
-    lines = ["VMs:"]
+    lines = ["ESXi hosts:"]
+    for h in homelab.get_hosts():
+        lines.append(f"🖥 {h['name']}  CPU {pct(h['cpu_percent'])}  RAM {pct(h['memory_percent'])}")
+    lines.append("\nDatastores:")
+    for ds in homelab.get_datastores():
+        lines.append(f"💾 {ds['name']}  {ds['used_percent']}% used")
+    lines.append("\nVMs:")
     for vm in homelab.get_vms():
-        lines.append(("🟢 " if vm["on"] else "🔴 ") + vm["name"])
+        lines.append(("🟢 " if vm["on"] else "🔴 ") + f"{vm['name']} ({vm['host']})")
     lines.append("\nContainers:")
     for c in homelab.get_containers():
         lines.append(("🟢 " if c["running"] else "🔴 ") + f"{c['name']} ({c['host']})")

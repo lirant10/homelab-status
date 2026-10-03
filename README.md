@@ -1,13 +1,17 @@
 # homelab-status
 
 A small Python project that reports homelab status from Prometheus:
-VMware VMs (on/off) and Podman containers (running/stopped).
+VMware ESXi hosts (CPU, memory), datastores (% used), VMs (on/off, per host)
+and Podman containers (running/stopped).
 It has a Telegram bot that answers `/status`, and a local AI agent
 (Ollama) that answers free-text questions about the lab.
 
 ## Files
 
-- `homelab.py` - queries Prometheus: `get_vms()`, `get_containers()`, `get_down_targets()`
+- `homelab.py` - queries Prometheus: `get_hosts()`, `get_datastores()`, `get_vms()`,
+  `get_containers()`, `get_down_targets()`. Works with any number of ESXi hosts and with vCenter;
+  results are de-duplicated, so a host scraped both directly and through vCenter shows up once.
+- `app.py` + `templates/index.html` - web page and `/api/status` JSON
 - `agent.py` - AI agent: a local model (Ollama) that uses the functions above as tools
 - `bot.py` - Telegram bot (long polling): `/status`, and any other text goes to the agent
 - `deploy/homelab-bot.service` - systemd user service for the bot
@@ -49,8 +53,8 @@ Ask from the terminal:
 uv run --env-file .env python agent.py "What is off in the lab?"
 ~~~
 
-The model decides which tools to call (`get_vms`, `get_containers`,
-`get_down_targets`). The code runs them and sends the results back to the
+The model decides which tools to call (`get_hosts`, `get_datastores`, `get_vms`,
+`get_containers`, `get_down_targets`). The code runs them and sends the results back to the
 model. The model never runs code itself.
 
 Ollama can run on another machine (for example a PC with a GPU) and stay
